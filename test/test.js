@@ -8,6 +8,8 @@ describe('Unit tests', async () => {
 
   beforeEach(async () => {
     lamport = new SimpleLamport({
+      keyFormat: 'base64',
+      signatureFormat: 'base64',
       seedEncoding: 'hex',
       hashEncoding: 'base64'
     });
@@ -16,8 +18,8 @@ describe('Unit tests', async () => {
   describe('Generate keys', async () => {
     it('should return a valid private key and public key pair', async () => {
       let { privateKey, publicKey } = lamport.generateKeys();
-      let rawPrivateKey = JSON.parse(privateKey);
-      let rawPublicKey = JSON.parse(publicKey);
+      let rawPrivateKey = lamport.decodeKey(privateKey);
+      let rawPublicKey = lamport.decodeKey(publicKey);
       assert.equal(rawPrivateKey.length, 2);
       assert.equal(rawPrivateKey[0].length, 256);
       assert.equal(rawPrivateKey[1].length, 256);
@@ -31,8 +33,8 @@ describe('Unit tests', async () => {
     it('should return a valid private key and public key pair from seed', async () => {
       let seed = lamport.generateSeed();
       let { privateKey, publicKey } = lamport.generateKeysFromSeed(seed, 0);
-      let rawPrivateKey = JSON.parse(privateKey);
-      let rawPublicKey = JSON.parse(publicKey);
+      let rawPrivateKey = lamport.decodeKey(privateKey);
+      let rawPublicKey = lamport.decodeKey(publicKey);
       assert.equal(rawPrivateKey.length, 2);
       assert.equal(rawPrivateKey[0].length, 256);
       assert.equal(rawPrivateKey[1].length, 256);
@@ -54,7 +56,7 @@ describe('Unit tests', async () => {
 
     it('should return signature as a string made up of 256 entries', async () => {
       let signature = lamport.sign('test message', privateKey);
-      let rawSignature = JSON.parse(signature);
+      let rawSignature = lamport.decodeSignature(signature);
       assert.equal(rawSignature.length, 256);
     });
   });
