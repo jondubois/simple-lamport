@@ -130,8 +130,14 @@ class SimpleLamport {
   }
 
   verify(message, signature, publicKey) {
-    let signatureRaw = this.decodeSignature(signature);
-    let publicKeyRaw = this.decodeKey(publicKey);
+    let signatureRaw;
+    let publicKeyRaw;
+    try {
+      signatureRaw = this.decodeSignature(signature);
+      publicKeyRaw = this.decodeKey(publicKey);
+    } catch (error) {
+      return false;
+    }
     let messageHash = this.sha256(message, this.hashEncoding);
     let messageBitArray = this.convertEncodedStringToBitArray(messageHash);
 
