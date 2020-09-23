@@ -38,5 +38,8 @@
   "dependencies": {
     "hash.js": "^1.1.7",
     "randombytes": "^2.1.0"
+  },
+  "browser": {
+    "./sha256": "./sha256-browser.js"
   }
 }

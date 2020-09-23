@@ -1,5 +1,5 @@
-const hash = require('hash.js');
 const randomBytes = require('randombytes');
+const sha256 = require('./sha256');
 
 const KEY_SIG_ENTRY_COUNT = 256;
 
@@ -12,6 +12,9 @@ class SimpleLamport {
     this.hashElementByteSize = options.hashElementByteSize || 32;
     this.seedEncoding = options.seedEncoding || 'hex';
     this.seedByteSize = options.seedByteSize || 64;
+
+    this.sha256 = sha256;
+
     if (options.hashFunction) {
       this.hash = options.hashFunction;
     } else {
@@ -146,14 +149,6 @@ class SimpleLamport {
       let targetPublicKeyItem = publicKeyRaw[bit][index];
       return signatureItemHash === targetPublicKeyItem;
     });
-  }
-
-  sha256(message, encoding) {
-    let shasum = hash.sha256().update(message).digest('hex');
-    if (encoding === 'hex') {
-      return shasum;
-    }
-    return Buffer.from(shasum, 'hex').toString(encoding || 'base64');
   }
 
   generateRandomArray(length, elementBytes) {
