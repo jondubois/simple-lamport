@@ -1,7 +1,10 @@
 const randomBytes = require('randombytes');
 const sha256 = require('./sha256');
+const hmacSha256 = require('./hmac-sha256');
 
 const KEY_SIG_ENTRY_COUNT = 256;
+const HASH_ELEMENT_BYTE_SIZE = 32;
+const SEED_BYTE_SIZE = 32;
 
 class SimpleLamport {
   constructor(options) {
@@ -9,17 +12,13 @@ class SimpleLamport {
     this.keyFormat = options.keyFormat || 'base64';
     this.signatureFormat = options.signatureFormat || 'base64';
     this.hashEncoding = options.hashEncoding || 'base64';
-    this.hashElementByteSize = options.hashElementByteSize || 32;
     this.seedEncoding = options.seedEncoding || 'hex';
-    this.seedByteSize = options.seedByteSize || 64;
 
     this.sha256 = sha256;
+    this.hmacSha256 = hmacSha256;
 
-    if (options.hashFunction) {
-      this.hash = options.hashFunction;
-    } else {
-      this.hash = this.sha256;
-    }
+    this.hash = this.sha256;
+    this.hmacHash = this.hmacSha256;
 
     if (this.keyFormat === 'object') {
       this.encodeKey = (rawKey) => {
@@ -85,7 +84,7 @@ class SimpleLamport {
   }
 
   generateSeed() {
-    return randomBytes(this.seedByteSize).toString(this.seedEncoding);
+    return randomBytes(SEED_BYTE_SIZE).toString(this.seedEncoding);
   }
 
   generateKeysFromSeed(seed, index) {
@@ -93,8 +92,8 @@ class SimpleLamport {
       index = 0;
     }
     let privateKey = [
-      this.generateRandomArrayFromSeed(KEY_SIG_ENTRY_COUNT, `${seed}-${index}-a`),
-      this.generateRandomArrayFromSeed(KEY_SIG_ENTRY_COUNT, `${seed}-${index}-b`)
+      this.generateRandomArrayFromSeed(KEY_SIG_ENTRY_COUNT, seed, `${index}-a`),
+      this.generateRandomArrayFromSeed(KEY_SIG_ENTRY_COUNT, seed, `${index}-b`)
     ];
 
     let publicKey = privateKey.map((privateKeyPart) => {
@@ -109,8 +108,8 @@ class SimpleLamport {
 
   generateKeys() {
     let privateKey = [
-      this.generateRandomArray(KEY_SIG_ENTRY_COUNT, this.hashElementByteSize),
-      this.generateRandomArray(KEY_SIG_ENTRY_COUNT, this.hashElementByteSize)
+      this.generateRandomArray(KEY_SIG_ENTRY_COUNT, HASH_ELEMENT_BYTE_SIZE),
+      this.generateRandomArray(KEY_SIG_ENTRY_COUNT, HASH_ELEMENT_BYTE_SIZE)
     ];
 
     let publicKey = privateKey.map((privateKeyPart) => {
@@ -159,10 +158,10 @@ class SimpleLamport {
     return randomArray;
   }
 
-  generateRandomArrayFromSeed(length, seed) {
+  generateRandomArrayFromSeed(length, seed, suffix) {
     let randomArray = [];
     for (let i = 0; i < length; i++) {
-      randomArray.push(this.hash(`${seed}-${i}`).toString(this.hashEncoding));
+      randomArray.push(this.hmacHash(seed, this.seedEncoding, `${suffix}-${i}`, this.hashEncoding));
     }
     return randomArray;
   }
@@ -194,14 +193,14 @@ class SimpleLamport {
     let keySecondPart = [];
     let key = [keyFirstPart, keySecondPart];
     for (let i = 0; i < KEY_SIG_ENTRY_COUNT; i++) {
-      let byteOffset = i * this.hashElementByteSize;
-      let bufferItem = encodedKey.slice(byteOffset, byteOffset + this.hashElementByteSize);
+      let byteOffset = i * HASH_ELEMENT_BYTE_SIZE;
+      let bufferItem = encodedKey.slice(byteOffset, byteOffset + HASH_ELEMENT_BYTE_SIZE);
       keyFirstPart.push(bufferItem.toString(this.hashEncoding));
     }
     let totalKeyLength = KEY_SIG_ENTRY_COUNT * 2;
     for (let i = KEY_SIG_ENTRY_COUNT; i < totalKeyLength; i++) {
-      let byteOffset = i * this.hashElementByteSize;
-      let bufferItem = encodedKey.slice(byteOffset, byteOffset + this.hashElementByteSize);
+      let byteOffset = i * HASH_ELEMENT_BYTE_SIZE;
+      let bufferItem = encodedKey.slice(byteOffset, byteOffset + HASH_ELEMENT_BYTE_SIZE);
       keySecondPart.push(bufferItem.toString(this.hashEncoding));
     }
     return key;
@@ -218,8 +217,8 @@ class SimpleLamport {
   _decodeSignatureFromBuffer(encodedSignature) {
     let signatureArray = [];
     for (let i = 0; i < KEY_SIG_ENTRY_COUNT; i++) {
-      let byteOffset = i * this.hashElementByteSize;
-      let bufferItem = encodedSignature.slice(byteOffset, byteOffset + this.hashElementByteSize);
+      let byteOffset = i * HASH_ELEMENT_BYTE_SIZE;
+      let bufferItem = encodedSignature.slice(byteOffset, byteOffset + HASH_ELEMENT_BYTE_SIZE);
       signatureArray.push(bufferItem.toString(this.hashEncoding));
     }
     return signatureArray;

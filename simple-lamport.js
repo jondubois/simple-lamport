@@ -1,4 +1,19 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.SimpleLamport = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+(function (Buffer){
+const hash = require('hash.js');
+
+module.exports = function (secret, secretEncoding, message, outputEncoding) {
+  let shasum = hash.hmac(hash.sha256, Buffer.from(secret, secretEncoding))
+    .update(message)
+    .digest('hex');
+  if (outputEncoding === 'hex') {
+    return shasum;
+  }
+  return Buffer.from(shasum, 'hex').toString(outputEncoding || 'base64');
+};
+
+}).call(this,require("buffer").Buffer)
+},{"buffer":3,"hash.js":4}],2:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -152,7 +167,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 (function (Buffer){
 /*!
  * The buffer module from node.js, for the browser.
@@ -1933,7 +1948,7 @@ function numberIsNaN (obj) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"base64-js":1,"buffer":2,"ieee754":15}],3:[function(require,module,exports){
+},{"base64-js":2,"buffer":3,"ieee754":16}],4:[function(require,module,exports){
 var hash = exports;
 
 hash.utils = require('./hash/utils');
@@ -1950,7 +1965,7 @@ hash.sha384 = hash.sha.sha384;
 hash.sha512 = hash.sha.sha512;
 hash.ripemd160 = hash.ripemd.ripemd160;
 
-},{"./hash/common":4,"./hash/hmac":5,"./hash/ripemd":6,"./hash/sha":7,"./hash/utils":14}],4:[function(require,module,exports){
+},{"./hash/common":5,"./hash/hmac":6,"./hash/ripemd":7,"./hash/sha":8,"./hash/utils":15}],5:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -2044,7 +2059,7 @@ BlockHash.prototype._pad = function pad() {
   return res;
 };
 
-},{"./utils":14,"minimalistic-assert":17}],5:[function(require,module,exports){
+},{"./utils":15,"minimalistic-assert":18}],6:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -2093,7 +2108,7 @@ Hmac.prototype.digest = function digest(enc) {
   return this.outer.digest(enc);
 };
 
-},{"./utils":14,"minimalistic-assert":17}],6:[function(require,module,exports){
+},{"./utils":15,"minimalistic-assert":18}],7:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -2241,7 +2256,7 @@ var sh = [
   8, 5, 12, 9, 12, 5, 14, 6, 8, 13, 6, 5, 15, 13, 11, 11
 ];
 
-},{"./common":4,"./utils":14}],7:[function(require,module,exports){
+},{"./common":5,"./utils":15}],8:[function(require,module,exports){
 'use strict';
 
 exports.sha1 = require('./sha/1');
@@ -2250,7 +2265,7 @@ exports.sha256 = require('./sha/256');
 exports.sha384 = require('./sha/384');
 exports.sha512 = require('./sha/512');
 
-},{"./sha/1":8,"./sha/224":9,"./sha/256":10,"./sha/384":11,"./sha/512":12}],8:[function(require,module,exports){
+},{"./sha/1":9,"./sha/224":10,"./sha/256":11,"./sha/384":12,"./sha/512":13}],9:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -2326,7 +2341,7 @@ SHA1.prototype._digest = function digest(enc) {
     return utils.split32(this.h, 'big');
 };
 
-},{"../common":4,"../utils":14,"./common":13}],9:[function(require,module,exports){
+},{"../common":5,"../utils":15,"./common":14}],10:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -2358,7 +2373,7 @@ SHA224.prototype._digest = function digest(enc) {
 };
 
 
-},{"../utils":14,"./256":10}],10:[function(require,module,exports){
+},{"../utils":15,"./256":11}],11:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -2465,7 +2480,7 @@ SHA256.prototype._digest = function digest(enc) {
     return utils.split32(this.h, 'big');
 };
 
-},{"../common":4,"../utils":14,"./common":13,"minimalistic-assert":17}],11:[function(require,module,exports){
+},{"../common":5,"../utils":15,"./common":14,"minimalistic-assert":18}],12:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -2502,7 +2517,7 @@ SHA384.prototype._digest = function digest(enc) {
     return utils.split32(this.h.slice(0, 12), 'big');
 };
 
-},{"../utils":14,"./512":12}],12:[function(require,module,exports){
+},{"../utils":15,"./512":13}],13:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -2834,7 +2849,7 @@ function g1_512_lo(xh, xl) {
   return r;
 }
 
-},{"../common":4,"../utils":14,"minimalistic-assert":17}],13:[function(require,module,exports){
+},{"../common":5,"../utils":15,"minimalistic-assert":18}],14:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -2885,7 +2900,7 @@ function g1_256(x) {
 }
 exports.g1_256 = g1_256;
 
-},{"../utils":14}],14:[function(require,module,exports){
+},{"../utils":15}],15:[function(require,module,exports){
 'use strict';
 
 var assert = require('minimalistic-assert');
@@ -3165,7 +3180,7 @@ function shr64_lo(ah, al, num) {
 }
 exports.shr64_lo = shr64_lo;
 
-},{"inherits":16,"minimalistic-assert":17}],15:[function(require,module,exports){
+},{"inherits":17,"minimalistic-assert":18}],16:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -3251,7 +3266,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -3280,7 +3295,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 module.exports = assert;
 
 function assert(val, msg) {
@@ -3293,7 +3308,7 @@ assert.equal = function assertEqual(l, r, msg) {
     throw new Error(msg || ('Assertion failed: ' + l + ' != ' + r));
 };
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -3479,7 +3494,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 (function (process,global){
 'use strict'
 
@@ -3533,7 +3548,7 @@ function randomBytes (size, cb) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":18,"safe-buffer":20}],20:[function(require,module,exports){
+},{"_process":19,"safe-buffer":21}],21:[function(require,module,exports){
 /*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
@@ -3600,7 +3615,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
   return buffer.SlowBuffer(size)
 }
 
-},{"buffer":2}],21:[function(require,module,exports){
+},{"buffer":3}],22:[function(require,module,exports){
 (function (Buffer){
 const hash = require('hash.js');
 
@@ -3613,12 +3628,15 @@ module.exports = function (message, encoding) {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":2,"hash.js":3}],"simple-lamport":[function(require,module,exports){
+},{"buffer":3,"hash.js":4}],"simple-lamport":[function(require,module,exports){
 (function (Buffer){
 const randomBytes = require('randombytes');
 const sha256 = require('./sha256');
+const hmacSha256 = require('./hmac-sha256');
 
 const KEY_SIG_ENTRY_COUNT = 256;
+const HASH_ELEMENT_BYTE_SIZE = 32;
+const SEED_BYTE_SIZE = 32;
 
 class SimpleLamport {
   constructor(options) {
@@ -3626,17 +3644,13 @@ class SimpleLamport {
     this.keyFormat = options.keyFormat || 'base64';
     this.signatureFormat = options.signatureFormat || 'base64';
     this.hashEncoding = options.hashEncoding || 'base64';
-    this.hashElementByteSize = options.hashElementByteSize || 32;
     this.seedEncoding = options.seedEncoding || 'hex';
-    this.seedByteSize = options.seedByteSize || 64;
 
     this.sha256 = sha256;
+    this.hmacSha256 = hmacSha256;
 
-    if (options.hashFunction) {
-      this.hash = options.hashFunction;
-    } else {
-      this.hash = this.sha256;
-    }
+    this.hash = this.sha256;
+    this.hmacHash = this.hmacSha256;
 
     if (this.keyFormat === 'object') {
       this.encodeKey = (rawKey) => {
@@ -3702,7 +3716,7 @@ class SimpleLamport {
   }
 
   generateSeed() {
-    return randomBytes(this.seedByteSize).toString(this.seedEncoding);
+    return randomBytes(SEED_BYTE_SIZE).toString(this.seedEncoding);
   }
 
   generateKeysFromSeed(seed, index) {
@@ -3710,8 +3724,8 @@ class SimpleLamport {
       index = 0;
     }
     let privateKey = [
-      this.generateRandomArrayFromSeed(KEY_SIG_ENTRY_COUNT, `${seed}-${index}-a`),
-      this.generateRandomArrayFromSeed(KEY_SIG_ENTRY_COUNT, `${seed}-${index}-b`)
+      this.generateRandomArrayFromSeed(KEY_SIG_ENTRY_COUNT, seed, `${index}-a`),
+      this.generateRandomArrayFromSeed(KEY_SIG_ENTRY_COUNT, seed, `${index}-b`)
     ];
 
     let publicKey = privateKey.map((privateKeyPart) => {
@@ -3726,8 +3740,8 @@ class SimpleLamport {
 
   generateKeys() {
     let privateKey = [
-      this.generateRandomArray(KEY_SIG_ENTRY_COUNT, this.hashElementByteSize),
-      this.generateRandomArray(KEY_SIG_ENTRY_COUNT, this.hashElementByteSize)
+      this.generateRandomArray(KEY_SIG_ENTRY_COUNT, HASH_ELEMENT_BYTE_SIZE),
+      this.generateRandomArray(KEY_SIG_ENTRY_COUNT, HASH_ELEMENT_BYTE_SIZE)
     ];
 
     let publicKey = privateKey.map((privateKeyPart) => {
@@ -3776,10 +3790,10 @@ class SimpleLamport {
     return randomArray;
   }
 
-  generateRandomArrayFromSeed(length, seed) {
+  generateRandomArrayFromSeed(length, seed, suffix) {
     let randomArray = [];
     for (let i = 0; i < length; i++) {
-      randomArray.push(this.hash(`${seed}-${i}`).toString(this.hashEncoding));
+      randomArray.push(this.hmacHash(seed, this.seedEncoding, `${suffix}-${i}`, this.hashEncoding));
     }
     return randomArray;
   }
@@ -3811,14 +3825,14 @@ class SimpleLamport {
     let keySecondPart = [];
     let key = [keyFirstPart, keySecondPart];
     for (let i = 0; i < KEY_SIG_ENTRY_COUNT; i++) {
-      let byteOffset = i * this.hashElementByteSize;
-      let bufferItem = encodedKey.slice(byteOffset, byteOffset + this.hashElementByteSize);
+      let byteOffset = i * HASH_ELEMENT_BYTE_SIZE;
+      let bufferItem = encodedKey.slice(byteOffset, byteOffset + HASH_ELEMENT_BYTE_SIZE);
       keyFirstPart.push(bufferItem.toString(this.hashEncoding));
     }
     let totalKeyLength = KEY_SIG_ENTRY_COUNT * 2;
     for (let i = KEY_SIG_ENTRY_COUNT; i < totalKeyLength; i++) {
-      let byteOffset = i * this.hashElementByteSize;
-      let bufferItem = encodedKey.slice(byteOffset, byteOffset + this.hashElementByteSize);
+      let byteOffset = i * HASH_ELEMENT_BYTE_SIZE;
+      let bufferItem = encodedKey.slice(byteOffset, byteOffset + HASH_ELEMENT_BYTE_SIZE);
       keySecondPart.push(bufferItem.toString(this.hashEncoding));
     }
     return key;
@@ -3835,8 +3849,8 @@ class SimpleLamport {
   _decodeSignatureFromBuffer(encodedSignature) {
     let signatureArray = [];
     for (let i = 0; i < KEY_SIG_ENTRY_COUNT; i++) {
-      let byteOffset = i * this.hashElementByteSize;
-      let bufferItem = encodedSignature.slice(byteOffset, byteOffset + this.hashElementByteSize);
+      let byteOffset = i * HASH_ELEMENT_BYTE_SIZE;
+      let bufferItem = encodedSignature.slice(byteOffset, byteOffset + HASH_ELEMENT_BYTE_SIZE);
       signatureArray.push(bufferItem.toString(this.hashEncoding));
     }
     return signatureArray;
@@ -3846,5 +3860,5 @@ class SimpleLamport {
 module.exports = SimpleLamport;
 
 }).call(this,require("buffer").Buffer)
-},{"./sha256":21,"buffer":2,"randombytes":19}]},{},["simple-lamport"])("simple-lamport")
+},{"./hmac-sha256":1,"./sha256":22,"buffer":3,"randombytes":20}]},{},["simple-lamport"])("simple-lamport")
 });
