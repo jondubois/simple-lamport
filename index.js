@@ -89,11 +89,11 @@ class SimpleLamport {
 
   generateKeysFromSeed(seed, index) {
     let seedBuffer = Buffer.from(seed, this.seedEncoding);
-    if (seedBuffer.byteLength !== SEED_BYTE_SIZE) {
+    if (seedBuffer.byteLength < SEED_BYTE_SIZE) {
       throw new Error(
         `The specified seed encoded as ${
           this.seedEncoding
-        } did not meet the seed length requirement of ${
+        } did not meet the minimum seed length requirement of ${
           SEED_BYTE_SIZE
         } bytes - Check that the seed encoding is correct`
       );
