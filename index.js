@@ -12,7 +12,7 @@ class SimpleLamport {
     this.keyFormat = options.keyFormat || 'base64';
     this.signatureFormat = options.signatureFormat || 'base64';
     this.hashEncoding = options.hashEncoding || 'base64';
-    this.seedEncoding = options.seedEncoding || 'hex';
+    this.seedEncoding = options.seedEncoding || 'base64';
 
     this.sha256 = sha256;
     this.hmacSha256 = hmacSha256;
@@ -88,6 +88,16 @@ class SimpleLamport {
   }
 
   generateKeysFromSeed(seed, index) {
+    let seedBuffer = Buffer.from(seed, this.seedEncoding);
+    if (seedBuffer.byteLength !== SEED_BYTE_SIZE) {
+      throw new Error(
+        `The specified seed encoded as ${
+          this.seedEncoding
+        } did not meet the seed length requirement of ${
+          SEED_BYTE_SIZE
+        } bytes - Check that the seed encoding is correct`
+      );
+    }
     if (index == null) {
       index = 0;
     }
